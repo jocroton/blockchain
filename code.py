@@ -54,6 +54,17 @@ for nodes[status]==1:
     
  """
   
-    
+ def gossip():
+     gossipers = info_list[:,0][info_list[:,1]==1] #nodes in state one
+     gossipers = [int(i) for i in gossipers]
+     listeners = [neighbor_list[i] for i in gossipers] #neighbors to those in state one
+     
+     #iterate thruohg all gossiping nodes
+     for x in range(len(gossipers)):
+         
+         gossiper = gossipers[x] #index of the active node, that is gossipping 
+         neighbors = listeners[x] #all its neighbors the active node has not yet gossiped to
+         
+       
 
     
