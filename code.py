@@ -5,8 +5,8 @@ Created on Tue Apr 24 14:07:57 2018
 @author: johan
 """
 from __future__ import division
-"import random, time, toolkit
-"import powerlaw as pl
+#import random, time, toolkit
+#import powerlaw as pl
 import networkx as nx
 import numpy as np
 import math as m
@@ -15,26 +15,27 @@ import matplotlib.pyplot as plt
 num_nodes = 100        # number of nodes in the network
 nodes_conn = 8      
 
-"initialize network
+#initialize network
 naka_net = nx.erdos_renyi_graph(num_nodes, float(nodes_conn) / float(num_nodes))
 
-"create list of neighbors for each node
+#create list of neighbors for each node
 neighbor_list=list()
 for line in nx.generate_adjlist(naka_net): 
     print(line)
     line=[int(s) for s in line.split(' ')]
     neighbor_list.append(line)
    
-"matrix of nodes and information
+#matrix of nodes and information
 info_list=np.zeros((100,3))
 
-"first column: node IDs
+#first column: node IDs
 info_list[:,0]=list(range(100))
 
-"third column: block IDs, set all to 1
+#third column: block IDs, set all to 1
 info_list[:,2]=1
     
-"pseudo code for gossip
+"""
+pseudo code for gossip
 increment=[] 
 
 def gossip():
@@ -50,6 +51,8 @@ for nodes[status]==1:
             "reset neighbors neighbor_list 
             "reset increment=0
     else node[]=0
+    
+ """
   
     
 
