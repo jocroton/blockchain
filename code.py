@@ -12,6 +12,8 @@ import numpy as np
 import math as m
 import matplotlib.pyplot as plt
 
+
+random.seed(100)
 num_nodes = 100        # number of nodes in the network
 nodes_conn = 8      
 
