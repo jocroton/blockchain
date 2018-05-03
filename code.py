@@ -24,6 +24,10 @@ for line in nx.generate_adjlist(naka_net):
     print(line)
     line=[int(s) for s in line.split(' ')]
     neighbor_list.append(line)
+    
+for i in range(len(neighbor_list)):  #remove the node ID from the neighbor-list
+    del neighbor_list[i][0]
+        
    
 #matrix of nodes and information
 info_list=np.zeros((100,3))
