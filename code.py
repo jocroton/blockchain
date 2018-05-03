@@ -58,17 +58,47 @@ for nodes[status]==1:
     
  """
   
- def gossip():
-     gossipers = info_list[:,0][info_list[:,1]==1] #nodes in state one
-     gossipers = [int(i) for i in gossipers]
-     listeners = [neighbor_list[i] for i in gossipers] #neighbors to those in state one
+ 
+gossipers = info_list[:,0][info_list[:,1]==1] #nodes in state one
+gossipers = [int(i) for i in gossipers]
+neighbors = neighbor_list #we will delete and add the neighbors from this list
+#neighbors = [neighbor_list[i] for i in gossipers] #neighbors to those nodes in state one
+t=0 
+ 
+while t < 100 :
+    
+    while len(gossipers) > 0 :
+        
+        
+         #iterate throuhg all gossiping nodes
+        for gossiper in gossipers:
+            
+
+             listeners = neighbors[gossiper] #all the neighbors the active node has not yet gossiped to
+             
+             if len(listeners) == 0 :    #if there are no more neighbors to gossip to
+                 info_list[gossiper,1] = 0
+                 
+             else :  #if there are still neighbors to gossip to
+                
+                 choose = random.randrange(0,len(listeners)) #choose a random node to gossip to
+                 listener = listeners[choose]
+                 del neighbors[gossiper][choose] #remove the neighbor
+                 
+                 if info_list[gossiper][2] > info_list[listener][2] : #compare chains (block-ID)
+                     
+                     info_list[listener][2] = info_list[gossiper][2] #adopt gossipers Chain
+                     info_list[listener][1] = 1 #change the state
+                     neighbors[listener] = neighbor_list[listener] #start gossiping to all neighbors again
+             
+                
+                    
+        t=t+1
+        gossipers = info_list[:,0][info_list[:,1]==1] #nodes in state one
+        gossipers = [int(i) for i in gossipers]
+        neighbors = [neighbor_list[i] for i in gossipers] #neighbors to those nodes in state one
+          
      
-     #iterate thruohg all gossiping nodes
-     for x in range(len(gossipers)):
-         
-         gossiper = gossipers[x] #index of the active node, that is gossipping 
-         neighbors = listeners[x] #all its neighbors the active node has not yet gossiped to
-         
        
 
     
