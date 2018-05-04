@@ -87,13 +87,13 @@ def delay_time(L, n):
     epsilon = np.random.poisson(L, n)
     
     delay=list()
-    delay = epsilon[0]
+    delay.append(epsilon[0])
     
-    for e in range(n-1):
+    for e in range(n):
 
-        delay = np.append(delay, epsilon[e] + epsilon[e+1])
+        delay.append(delay[e] + epsilon[e+1])
     return(delay)
-    
+        
     
     
     
