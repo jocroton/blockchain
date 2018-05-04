@@ -135,7 +135,14 @@ info_list[:,0]=list(range(100))
 
 #third column: block IDs, set all to 1
 info_list[:,2]=1
+  
     
+#calculating network delays for all nodes
+delay_list = list()
+for i in range(num_nodes):
+   add = delay_time(network_delay, len(neighbor_list[i]))
+   delay_list.append(add)
+
 """
 pseudo code for gossip
 increment=[] 
