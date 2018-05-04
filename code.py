@@ -135,7 +135,7 @@ neighbor_list=network[1]
 info_list=np.zeros((num_nodes,3))
 
 #first column: node IDs
-info_list[:,0]=list(range(100))
+info_list[:,0]=list(range(num_nodes))
 
 #third column: block IDs, set all to 1
 info_list[:,2]=1
