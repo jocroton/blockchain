@@ -98,6 +98,7 @@ def delay_time(L, n):
     
     
 def gossiping():
+    
      #iterate throuhg all gossiping nodes
         for gossiper in gossipers:
             
@@ -107,19 +108,21 @@ def gossiping():
              if len(listeners) == 0 :    #if there are no more neighbors to gossip to
                  info_list[gossiper,1] = 0
                  
-             else :  #if there are still neighbors to gossip to
+             elif delay_list[gossiper][0] < t :  #time is > than the delay for the next gossip round
                 
                  choose = random.randrange(0,len(listeners)) #choose a random node to gossip to
                  listener = listeners[choose]
                  del neighbors[gossiper][choose] #remove the neighbor
+                 del delay_list[gossiper][0] #next entry will be the time it takes to gossip to two nodes
                  
                  if info_list[gossiper][2] > info_list[listener][2] : #compare chains (block-ID)
                      
                      info_list[listener][2] = info_list[gossiper][2] #adopt gossipers Chain
                      info_list[listener][1] = 1 #change the state
                      neighbors[listener] = neighbor_list[listener] #start gossiping to all neighbors again
-
-
+                     #need to update the listeners delay times
+                     delay_list[listener] = delay_time(network_delay, len(neighbor_list[listener])) + t
+   
                         
 #initialize the network
 network = random_graph(num_nodes, nodes_conn)
@@ -143,27 +146,7 @@ for i in range(num_nodes):
    add = delay_time(network_delay, len(neighbor_list[i]))
    delay_list.append(add)
 
-"""
-pseudo code for gossip
-increment=[] 
 
-def gossip():
-"find nodes in state=1
-"find neighbors for each node in state 1
-for nodes[status]==1:
-    if increment[node] < range_neighbors:
-    "pick random neighbor
-    "remove neighbor from neighbor_list
-        if block[node]>block[neighbor]:
-            "update neighbor block
-            "neighbor block length +1
-            "reset neighbors neighbor_list 
-            "reset increment=0
-    else node[]=0
-    
- """
-  
- 
 gossipers = info_list[:,0][info_list[:,1]==1] #nodes in state one
 gossipers = [int(i) for i in gossipers]
 neighbors = neighbor_list #we will delete and add the neighbors from this list
