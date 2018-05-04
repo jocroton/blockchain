@@ -164,13 +164,8 @@ t=0
  
     
         
-while consensus() == False :
-    """
-    Careful: consensus may be reached before all nodes have gossiped to all of 
-    their neighbors
-    """
-    
-    
+while len(gossipers) > 0 :
+
     gossiping() #one round of gossip, all nodes in state one talk to one of their neighbors
                 
     t=t+1
@@ -182,9 +177,15 @@ while consensus() == False :
         Block_creation()
         print(New block created before consensus)
     """
-
-print("Consensus reached after t =")
-print(t)    
+     
+    if consensus() == True:
+        
+        """
+        Careful: consensus may be reached before all nodes have gossiped to all of 
+        their neighbors
+        """
+        print("Consensus reached after t =")
+        print(t)      
  
        
 
