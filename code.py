@@ -74,7 +74,15 @@ def random_graph(n, k):
                 edge_list.append((j,i))
     return (A, A_list, edge_list) 
   
-    
+ 
+
+def consensus():
+    """
+    len(set(info_list[:,2])) will return the number of different block-IDs
+     in the info_list
+    """
+    return(len(set(info_list[:,2]))) <=1
+
 
 def delay_time(L, n):
     """
@@ -155,14 +163,25 @@ neighbors = neighbor_list #we will delete and add the neighbors from this list
 t=0 
  
     
-while len(gossipers) > 0 :
-
-    gossiping()
-
-
+        
+while consensus() == False :
+    """
+    Careful: consensus may be reached before all nodes have gossiped to all of 
+    their neighbors
+    """
+    
+    
+    gossiping() #one round of gossip, all nodes in state one talk to one of their neighbors
+                
     t=t+1
     gossipers = info_list[:,0][info_list[:,1]==1] #nodes in state one
     gossipers = [int(i) for i in gossipers]
+     
+    """
+    if t > 10 min:
+        Block_creation()
+        print(New block created before consensus)
+    """
 
 print("Consensus reached after t =")
 print(t)    
