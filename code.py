@@ -5,7 +5,7 @@ Created on Tue Apr 24 14:07:57 2018
 @author: johan
 """
 from __future__ import division
-import random, time, toolkit
+import random
 #import powerlaw as pl
 import networkx as nx
 import numpy as np
