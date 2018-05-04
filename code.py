@@ -120,9 +120,10 @@ def gossiping():
                      info_list[listener][2] = info_list[gossiper][2] #adopt gossipers Chain
                      info_list[listener][1] = 1 #change the state
                      neighbors[listener] = neighbor_list[listener] #start gossiping to all neighbors again
-                     #need to update the listeners delay times
-                     delay_list[listener] = delay_time(network_delay, len(neighbor_list[listener])) + t
-   
+                      #need to update the listeners delay times (newly started gossiping)
+                     delay_list[listener] = delay_time(network_delay, len(neighbor_list[listener]))
+                     delay_list[listener] = [x+t for x in delay_list[listener]]
+       
                         
 #initialize the network
 network = random_graph(num_nodes, nodes_conn)
