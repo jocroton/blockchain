@@ -93,6 +93,13 @@ def gossiping():
                      neighbors[listener] = neighbor_list[listener] #start gossiping to all neighbors again
 
 
+                        
+#initialize the network
+network = random_graph(num_nodes, nodes_conn)
+neighbor_list=network[1]                    
+
+
+                        
 #matrix of nodes and information
 info_list=np.zeros((num_nodes,3))
 
