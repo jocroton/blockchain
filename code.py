@@ -89,7 +89,7 @@ def delay_time(L, n):
     delay=list()
     delay.append(epsilon[0])
     
-    for e in range(n):
+    for e in range(n-1):
 
         delay.append(delay[e] + epsilon[e+1])
     return(delay)
