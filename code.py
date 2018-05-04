@@ -94,7 +94,7 @@ def gossiping():
 
 
 #matrix of nodes and information
-info_list=np.zeros((100,3))
+info_list=np.zeros((num_nodes,3))
 
 #first column: node IDs
 info_list[:,0]=list(range(100))
