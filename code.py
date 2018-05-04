@@ -30,7 +30,30 @@ for line in nx.generate_adjlist(naka_net):
 for i in range(len(neighbor_list)):  #remove the node ID from the neighbor-list
     del neighbor_list[i][0]
         
-   
+  
+def gossiping():
+     #iterate throuhg all gossiping nodes
+        for gossiper in gossipers:
+            
+
+             listeners = neighbors[gossiper] #all the neighbors the active node has not yet gossiped to
+             
+             if len(listeners) == 0 :    #if there are no more neighbors to gossip to
+                 info_list[gossiper,1] = 0
+                 
+             else :  #if there are still neighbors to gossip to
+                
+                 choose = random.randrange(0,len(listeners)) #choose a random node to gossip to
+                 listener = listeners[choose]
+                 del neighbors[gossiper][choose] #remove the neighbor
+                 
+                 if info_list[gossiper][2] > info_list[listener][2] : #compare chains (block-ID)
+                     
+                     info_list[listener][2] = info_list[gossiper][2] #adopt gossipers Chain
+                     info_list[listener][1] = 1 #change the state
+                     neighbors[listener] = neighbor_list[listener] #start gossiping to all neighbors again
+
+
 #matrix of nodes and information
 info_list=np.zeros((100,3))
 
@@ -71,29 +94,8 @@ while t < 100 :
     
     while len(gossipers) > 0 :
         
+        gossiping()
         
-         #iterate throuhg all gossiping nodes
-        for gossiper in gossipers:
-            
-
-             listeners = neighbors[gossiper] #all the neighbors the active node has not yet gossiped to
-             
-             if len(listeners) == 0 :    #if there are no more neighbors to gossip to
-                 info_list[gossiper,1] = 0
-                 
-             else :  #if there are still neighbors to gossip to
-                
-                 choose = random.randrange(0,len(listeners)) #choose a random node to gossip to
-                 listener = listeners[choose]
-                 del neighbors[gossiper][choose] #remove the neighbor
-                 
-                 if info_list[gossiper][2] > info_list[listener][2] : #compare chains (block-ID)
-                     
-                     info_list[listener][2] = info_list[gossiper][2] #adopt gossipers Chain
-                     info_list[listener][1] = 1 #change the state
-                     neighbors[listener] = neighbor_list[listener] #start gossiping to all neighbors again
-             
-                
                     
         t=t+1
         gossipers = info_list[:,0][info_list[:,1]==1] #nodes in state one
