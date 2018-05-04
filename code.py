@@ -154,18 +154,19 @@ neighbors = neighbor_list #we will delete and add the neighbors from this list
 #neighbors = [neighbor_list[i] for i in gossipers] #neighbors to those nodes in state one
 t=0 
  
-while t < 100 :
     
-    while len(gossipers) > 0 :
-        
-        gossiping()
-        
-                    
-        t=t+1
-        gossipers = info_list[:,0][info_list[:,1]==1] #nodes in state one
-        gossipers = [int(i) for i in gossipers]
-          
-     
+while len(gossipers) > 0 :
+
+    gossiping()
+
+
+    t=t+1
+    gossipers = info_list[:,0][info_list[:,1]==1] #nodes in state one
+    gossipers = [int(i) for i in gossipers]
+
+print("Consensus reached after t =")
+print(t)    
+ 
        
 
     
