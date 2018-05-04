@@ -74,6 +74,29 @@ def random_graph(n, k):
                 edge_list.append((j,i))
     return (A, A_list, edge_list) 
   
+    
+
+def delay_time(L, n):
+    """
+    create an array of time it will take to gossip to one neighbor, to two neighbors,
+    ect. such that the time intervall between the gossiping events follows a 
+    poisson distribution
+    """
+    
+    
+    epsilon = np.random.poisson(L, n)
+    
+    delay=list()
+    delay = epsilon[0]
+    
+    for e in range(n-1):
+
+        delay = np.append(delay, epsilon[e] + epsilon[e+1])
+    return(delay)
+    
+    
+    
+    
 def gossiping():
      #iterate throuhg all gossiping nodes
         for gossiper in gossipers:
