@@ -145,8 +145,10 @@ info_list=np.zeros((num_nodes,3))
 #first column: node IDs
 info_list[:,0]=list(range(num_nodes))
 
-#third column: block IDs, set all to 1
-info_list[:,2]=1
+#third column: block IDs, implement a random first block with ID 1
+new = random.randrange(0, num_nodes-1)
+info_list[new,2] = 1
+info_list[new,1] = 1
   
     
 #calculating network delays for all nodes
