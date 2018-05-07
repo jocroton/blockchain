@@ -122,7 +122,15 @@ def new_block():
     delay_list[lucky] = delay_time(network_delay, len(neighbor_list[lucky]))
     delay_list[lucky] = [x+t for x in delay_list[lucky]]
        
-    
+def lottery():
+    for i in range(num_nodes): 
+        lottery = random.uniform(0.0, 1.0)
+        if t > probability[i]:
+            probability[i] = probability[i]       
+        else:
+            lucky = i
+            new_block() 
+        
     
 def gossiping():
     
@@ -198,16 +206,6 @@ t=0
 
 
 
-for i in range(num_nodes):
-    
-    lottery = random.uniform(0.0, 1.0)
-    if t > probability[i]:
-        probability[i] = probability[i]
-        
-    else:
-        lucky = i
-        new_block()
-        
             
 
 
@@ -216,7 +214,8 @@ for i in range(num_nodes):
 while len(gossipers) > 0 :
 
     gossiping() #one round of gossip, all nodes in state one talk to one of their neighbors
-                
+    lottery()
+            
     t=t+1
     gossipers = info_list[:,0][info_list[:,1]==1] #nodes in state one
     gossipers = [int(i) for i in gossipers]
