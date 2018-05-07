@@ -20,7 +20,7 @@ network_delay = 10   #lambda
 discovery = []      #expected time between block discoveries
 num_nodes = 100        # number of nodes in the network
 nodes_conn = 8 
-dilusion_rate = 0 #percentage of non-miners
+dilusion_rate = 0.2 #percentage of non-miners
 expo_scale = 1     #Parameter for expo. distr. of comp power   
 
 """
@@ -85,7 +85,7 @@ def consensus():
     """
     
     a = [last_block[i][-1] for i in range(num_nodes)]
-    return(len(set(a))) <=1
+    return(len(set(a)) <=1)
 
 
 def delay_time(L, n):
@@ -111,11 +111,17 @@ def delay_time(L, n):
 def new_block():
     """
     """
-    parent_block = last_block[lucky]
+    parent_block = last_block[lucky]   
     block_ID = parent_block
-    block_ID.append(block_num)
-    last_block[lucky] = block_ID
+    block_ID.append(block_num)   #current block number added to parent block: new ID
+    last_block[lucky] = block_ID #add new block to lucky's chain
     block_num = block_num + 1
+    
+    neighbors[lucky] = neighbor_list[lucky] #start gossiping to all neighbors again
+  #need to update the listeners delay times (newly started gossiping)
+    delay_list[lucky] = delay_time(network_delay, len(neighbor_list[lucky]))
+    delay_list[lucky] = [x+t for x in delay_list[lucky]]
+       
     
     
 def gossiping():
@@ -151,7 +157,7 @@ network = random_graph(num_nodes, nodes_conn)
 neighbor_list=network[1]                    
 
 # make block IDs for the last block in the node's chain
-last_block =[0 for i in range(num_nodes)]
+last_block =[[(0)] for i in range(num_nodes)]
 
 
 # counter of new blocks in order of creation
@@ -172,7 +178,7 @@ last_block[new] = [(1)]  # record block ID
 comp_power = np.random.exponential(expo_scale, int(num_nodes*(1-dilusion_rate)))
 miners = random.sample(range(num_nodes), int(num_nodes*(1-dilusion_rate)))
 info_list[miners,2] = comp_power
-
+probability = info_list[:,2]/sum(comp_power)
 
   
     
@@ -189,6 +195,22 @@ neighbors = neighbor_list #we will delete and add the neighbors from this list
 #neighbors = [neighbor_list[i] for i in gossipers] #neighbors to those nodes in state one
 t=0 
  
+
+
+
+for i in range(num_nodes):
+    
+    lottery = random.uniform(0.0, 1.0)
+    if t > probability[i]:
+        probability[i] = probability[i]
+        
+    else:
+        lucky = i
+        new_block()
+        
+            
+
+
     
         
 while len(gossipers) > 0 :
