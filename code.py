@@ -21,8 +21,7 @@ discovery = []      #expected time between block discoveries
 num_nodes = 100        # number of nodes in the network
 nodes_conn = 8 
 dilusion_rate = 0.2 #percentage of non-miners
-expo_scale = 1     #Parameter for expo. distr. of comp power   
-
+expo_scale = 0.096   #Parameter for expo. distr. of comp power   
 """
 #initialize network
 naka_net = nx.erdos_renyi_graph(num_nodes, float(nodes_conn) / float(num_nodes))
@@ -108,30 +107,22 @@ def delay_time(L, n):
         delay.append(delay[e] + epsilon[e+1])
     return(delay)
         
-def new_block():
+def new_block(lucky, num):  #creates a new block 
     """
     """
-    parent_block = last_block[lucky]   
-    block_ID = parent_block
-    block_ID.append(block_num)   #current block number added to parent block: new ID
-    last_block[lucky] = block_ID #add new block to lucky's chain
-    block_num = block_num + 1
     
+    parent_block = last_block[lucky]   
+    block_ID = ([parent_block, num])
+    block_ID.append(num)   #current block number added to parent block: new ID
+    last_block[lucky] = block_ID #add new block to lucky's chain
+    
+    info_list[lucky, 1] = 1
     neighbors[lucky] = neighbor_list[lucky] #start gossiping to all neighbors again
   #need to update the listeners delay times (newly started gossiping)
     delay_list[lucky] = delay_time(network_delay, len(neighbor_list[lucky]))
     delay_list[lucky] = [x+t for x in delay_list[lucky]]
-       
-def lottery():
-    for i in range(num_nodes): 
-        lottery = random.uniform(0.0, 1.0)
-        if t > probability[i]:
-            probability[i] = probability[i]       
-        else:
-            lucky = i
-            new_block() 
-        
-    
+
+
 def gossiping():
     
      #iterate throuhg all gossiping nodes
@@ -152,7 +143,7 @@ def gossiping():
                  
                  if len(last_block[gossiper]) > len(last_block[listener]) : #compare chains (block-ID)
                      
-                     last_block[gossiper] = last_block[listener] #adopt gossipers Chain
+                     last_block[listener] = last_block[gossiper] #adopt gossipers Chain
                      info_list[listener][1] = 1 #change the state
                      neighbors[listener] = neighbor_list[listener] #start gossiping to all neighbors again
                       #need to update the listeners delay times (newly started gossiping)
@@ -180,13 +171,14 @@ info_list[:,0]=list(range(num_nodes))
 # implement a random first block with ID 1
 new = random.randrange(0, num_nodes)
 info_list[new,1] = 1    #change state
-last_block[new] = [(1)]  # record block ID 
+last_block[new] = [0,1]  # record block ID 
 
 #endow computational power
 comp_power = np.random.exponential(expo_scale, int(num_nodes*(1-dilusion_rate)))
 miners = random.sample(range(num_nodes), int(num_nodes*(1-dilusion_rate)))
 info_list[miners,2] = comp_power
-probability = info_list[:,2]/sum(comp_power)
+probability_dt = info_list[:,2]/sum(info_list[:,2])
+probability = probability_dt  #variable that will be changed below
 
   
     
@@ -203,7 +195,7 @@ neighbors = neighbor_list #we will delete and add the neighbors from this list
 #neighbors = [neighbor_list[i] for i in gossipers] #neighbors to those nodes in state one
 t=0 
  
-
+gossiping_round = 0
 
 
             
@@ -214,8 +206,25 @@ t=0
 while len(gossipers) > 0 :
 
     gossiping() #one round of gossip, all nodes in state one talk to one of their neighbors
-    lottery()
-            
+    
+    gossiping_round = gossiping_round + 1
+    print("gossiping round number:")
+    print(gossiping_round)
+    # block creation
+    
+    """
+    for i in range(num_nodes):  #go through all the nodes
+        lottery = random.uniform(0.0, 1.0)
+        if lottery > probability[i]:    #did the node mine a new block?
+            probability[i] = (1-probability[i]) * probability[i]   
+        else:
+            new_block(i, block_num)
+            block_num = block_num + 1
+            probability[i] = probability_dt[i]
+            print("new block mined")
+           
+       """  
+                
     t=t+1
     gossipers = info_list[:,0][info_list[:,1]==1] #nodes in state one
     gossipers = [int(i) for i in gossipers]
