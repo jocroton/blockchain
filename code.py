@@ -19,7 +19,9 @@ random.seed(100)
 network_delay = 10   #lambda
 discovery = []      #expected time between block discoveries
 num_nodes = 100        # number of nodes in the network
-nodes_conn = 8      
+nodes_conn = 8 
+dilusion_rate = 0 #percentage of non-miners
+expo_scale = 1     #Parameter for expo. distr. of comp power   
 
 """
 #initialize network
@@ -81,7 +83,9 @@ def consensus():
     len(set(info_list[:,2])) will return the number of different block-IDs
      in the info_list
     """
-    return(len(set(info_list[:,2]))) <=1
+    
+    a = [last_block[i][-1] for i in range(num_nodes)]
+    return(len(set(a))) <=1
 
 
 def delay_time(L, n):
@@ -89,6 +93,8 @@ def delay_time(L, n):
     create an array of time it will take to gossip to one neighbor, to two neighbors,
     ect. such that the time intervall between the gossiping events follows a 
     poisson distribution
+    
+    
     """
     
     
@@ -130,9 +136,9 @@ def gossiping():
                  del neighbors[gossiper][choose] #remove the neighbor
                  del delay_list[gossiper][0] #next entry will be the time it takes to gossip to two nodes
                  
-                 if info_list[gossiper][2] > info_list[listener][2] : #compare chains (block-ID)
+                 if len(last_block[gossiper]) > len(last_block[listener]) : #compare chains (block-ID)
                      
-                     info_list[listener][2] = info_list[gossiper][2] #adopt gossipers Chain
+                     last_block[gossiper] = last_block[listener] #adopt gossipers Chain
                      info_list[listener][1] = 1 #change the state
                      neighbors[listener] = neighbor_list[listener] #start gossiping to all neighbors again
                       #need to update the listeners delay times (newly started gossiping)
@@ -145,8 +151,8 @@ network = random_graph(num_nodes, nodes_conn)
 neighbor_list=network[1]                    
 
 # make block IDs for the last block in the node's chain
-last_block = list()
-last_block =[[] for i in range(num_nodes)]
+last_block =[0 for i in range(num_nodes)]
+
 
 # counter of new blocks in order of creation
 block_num = 1
@@ -157,13 +163,17 @@ info_list=np.zeros((num_nodes,3))
 #first column: node IDs
 info_list[:,0]=list(range(num_nodes))
 
-#third column: block IDs, implement a random first block with ID 1
-new = random.randrange(0, num_nodes-1)
-info_list[new,2] = 1
-info_list[new,1] = 1
+# implement a random first block with ID 1
+new = random.randrange(0, num_nodes)
+info_list[new,1] = 1    #change state
+last_block[new] = [(1)]  # record block ID 
 
-# record block ID 
-last_block[new] = [(1)]
+#endow computational power
+comp_power = np.random.exponential(expo_scale, int(num_nodes*(1-dilusion_rate)))
+miners = random.sample(range(num_nodes), int(num_nodes*(1-dilusion_rate)))
+info_list[miners,2] = comp_power
+
+
   
     
 #calculating network delays for all nodes
