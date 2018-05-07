@@ -102,7 +102,14 @@ def delay_time(L, n):
         delay.append(delay[e] + epsilon[e+1])
     return(delay)
         
-    
+def new_block():
+    """
+    """
+    parent_block = last_block[lucky]
+    block_ID = parent_block
+    block_ID.append(block_num)
+    last_block[lucky] = block_ID
+    block_num = block_num + 1
     
     
 def gossiping():
@@ -137,7 +144,12 @@ def gossiping():
 network = random_graph(num_nodes, nodes_conn)
 neighbor_list=network[1]                    
 
+# make block IDs for the last block in the node's chain
+last_block = list()
+last_block =[[] for i in range(num_nodes)]
 
+# counter of new blocks in order of creation
+block_num = 1
                         
 #matrix of nodes and information
 info_list=np.zeros((num_nodes,3))
@@ -149,6 +161,9 @@ info_list[:,0]=list(range(num_nodes))
 new = random.randrange(0, num_nodes-1)
 info_list[new,2] = 1
 info_list[new,1] = 1
+
+# record block ID 
+last_block[new] = [(1)]
   
     
 #calculating network delays for all nodes
