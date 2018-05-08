@@ -23,6 +23,8 @@ num_nodes = 100        # number of nodes in the network
 nodes_conn = 8 
 dilusion_rate = 0.2 #percentage of non-miners
 expo_scale = 0.096   #Parameter for expo. distr. of comp power   
+
+
 """
 #initialize network
 naka_net = nx.erdos_renyi_graph(num_nodes, float(nodes_conn) / float(num_nodes))
@@ -119,10 +121,12 @@ def new_block(lucky, num):  #creates a new block
     global info_list
     global neighbors
     global delay_list
+    global list_blockIDs
     
     block_ID = copy.copy(last_block[lucky])  
     block_ID.append(num)   #current block number added to parent block: new ID
     print(block_ID)
+    list_blockIDs.append(block_ID)
     last_block[lucky] = copy.copy(block_ID) #add new block to lucky's chain
     
     info_list[lucky, 1] = 1
@@ -188,6 +192,11 @@ info_list[:,0]=list(range(num_nodes))
 new = random.randrange(0, num_nodes)
 info_list[new,1] = 1    #change state
 last_block[new] = [0,1]  # record block ID 
+
+# create a list to keep track of each block's unique ID
+list_blockIDs = list()
+list_blockIDs.append([0])
+list_blockIDs.append([0, 1])
 
 #endow computational power
 comp_power = np.random.exponential(expo_scale, int(num_nodes*(1-dilusion_rate)))
