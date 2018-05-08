@@ -208,6 +208,7 @@ neighbors = copy.copy(neighbor_list) # create copy for deleting and adding liste
 
 # Variable to check whether a new consensus has been reached
 cons = np.zeros((1,2))
+consensus_times = [] 
 
 # Time and gossiping round begin at zero
 t=0 
@@ -240,8 +241,7 @@ while t <10000 :
             print("new block mined by")     # output: which miner got lucky
             print(i)
             
-    # Check for consensus in the network 
-    consensus_times = list()    
+    # Check for consensus in the network    
     cons[0,0] = copy.copy(cons[0,1]) # first column is previous consensus status
     cons[0,1] = consensus()          # update second column with current consensus status
     if cons[0,0] != cons[0,1]:       # consensus status has changed
@@ -265,4 +265,4 @@ orphans = list(set(check_block) - set(longest_chain))       # compare longest ch
 num_orphans = len(orphans)                                  # record number of orphaned blocks
 num_total = block_num                                       # record total number of blocks mined
 num_onchain = len(longest_chain)                            # record total number of blocks on the main chain
-
+num_consensus = len(consensus_times)                        # record number of times consensus was reached
