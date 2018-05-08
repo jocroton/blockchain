@@ -162,7 +162,10 @@ def gossiping():
                   #need to update the listeners delay times (newly started gossiping)
                  delay_list[listener] = delay_time(network_delay, len(neighbor_list[listener]))
                  delay_list[listener] = [x+t for x in delay_list[listener]]
-   
+             elif len(last_block[gossiper]) == len(last_block[listener]):
+                  if (last_block[gossiper][-1] > last_block[listener][-1]):
+                      last_block[listener] = copy.copy(last_block[gossiper]) #adopt gossipers Chain
+                        
                         
 #initialize the network
 network = random_graph(num_nodes, nodes_conn)
