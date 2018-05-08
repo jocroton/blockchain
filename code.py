@@ -263,4 +263,12 @@ while t <10000 :
         print(New block created before consensus)
     """
      
+chain_len = [len(last_block[i]) for i in range(num_nodes)]
+longest_chain_index = chain_len.index(max(chain_len))
+longest_chain = copy.copy(last_block[longest_chain_index])
+check_block = list(range(longest_chain[-1]+1))
+orphans = list(set(check_block) - set(longest_chain))
+num_orphans = len(orphans)
+num_total = block_num
+num_onchain = len(longest_chain)
 
