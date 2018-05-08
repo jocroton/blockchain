@@ -211,10 +211,7 @@ gossipers = [int(i) for i in gossipers]
 neighbors = copy.copy(neighbor_list) #we will delete and add the neighbors from this list
 #neighbors = [neighbor_list[i] for i in gossipers] #neighbors to those nodes in state one
 
-neighbors[0]
-neighbor_list[0]
-del neighbors[0][0]
-neighbor_list[0]
+cons = np.zeros((1,2))
 
 t=0 
  
@@ -247,6 +244,13 @@ while t <10000 :
             print("new block mined by")
             print(i)
            
+    cons[0,0] = copy.copy(cons[0,1])
+    cons[0,1] = consensus()
+    
+    if cons[0,0] != cons[0,1]:
+        if cons[0,1] == True:
+            print("consensus reached after t =")
+            print(t)
        
                 
     t=t+1
@@ -259,14 +263,4 @@ while t <10000 :
         print(New block created before consensus)
     """
      
-    if consensus() == True:
-        
-        """
-        Careful: consensus may be reached before all nodes have gossiped to all of 
-        their neighbors
-        """
-        print("Consensus reached after t =")
-        print(t)      
- 
-       
 
