@@ -7,22 +7,21 @@ Created on Tue Apr 24 14:07:57 2018
 @authors: Johanna Croton, Nikolaj Bauer, Sebastian Haelg
 
 """
-# import packages
+# Import packages
 from __future__ import division
 import random
 import numpy as np
 import copy
 
-# set random seed
+# Set random seed
 random.seed(100)
 
-# set order parameters
-network_delay = 10  #lambda^-1
-discovery = []      #expected time between block discoveries
+# Set order parameters
+network_delay = 10  # lambda^-1
 num_nodes = 100     # number of nodes in the network
 nodes_conn = 8      # maximum number of connections    
-dilusion_rate = 0.2 #percentage of NON-miners
-expo_scale = 0.096  #Parameter for exponential distribution of comp power   
+dilusion_rate = 0.2 # percentage of NON-miners
+expo_scale = 0.096  # parameter for exponential distribution of computational power   
 
 
 ###############################################################################
@@ -101,7 +100,7 @@ def new_block(lucky, num):
     Creates a new block when called for "lucky" miner node using its parent block (blockID) and
     the current block number. 
     """
-    # set variables that are changed within the function to global scope
+    # Set variables that are changed within the function to global scope
     global last_block
     global info_list
     global neighbors
