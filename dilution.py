@@ -7,22 +7,22 @@ Created on Tue Apr 24 14:07:57 2018
 @authors: Johanna Croton, Nikolaj Bauer, Sebastian Haelg
 
 """
-# import packages
+# Import packages
 from __future__ import division
 import random
 import numpy as np
 import copy
+from copy import deepcopy
 
-# set random seed
+# Set random seed
 random.seed(100)
 
-# set order parameters
-network_delay = 10  #lambda^-1
-discovery = []      #expected time between block discoveries
+# Set order parameters
+network_delay = 10  # lambda^-1
 num_nodes = 100     # number of nodes in the network
 nodes_conn = 8      # maximum number of connections    
-dilusion_rate = 0.2 #percentage of NON-miners
-expo_scale = 0.096  #Parameter for exponential distribution of comp power   
+dilusion_rate = 0.9 # percentage of NON-miners
+expo_scale = 0.096  # parameter for exponential distribution of computational power   
 
 
 ###############################################################################
@@ -101,7 +101,7 @@ def new_block(lucky, num):
     Creates a new block when called for "lucky" miner node using its parent block (blockID) and
     the current block number. 
     """
-    # set variables that are changed within the function to global scope
+    # Set variables that are changed within the function to global scope
     global last_block
     global info_list
     global neighbors
@@ -209,61 +209,75 @@ neighbors = copy.copy(neighbor_list) # create copy for deleting and adding liste
 
 # Variable to check whether a new consensus has been reached
 cons = np.zeros((1,2))
+consensus_times = [] 
 
 # Time and gossiping round begin at zero
 t=0 
 gossiping_round = 0
-
+trial = 1
+trials = []
+orphanedblocks = list()
 
          
 ###############################################################################
 # Run the code
 ###############################################################################    
-        
-while t <10000 :
 
-    gossiping() # one round of gossip
-    
-    gossiping_round = gossiping_round + 1 # increment number of rounds
-    # print("gossiping round number:")
-    # print(gossiping_round)
-    
-    
-    # Block creation, keeping in mind that for all non-miners probability=0
-    for i in range(num_nodes):              # iterate through all nodes
-        lottery = random.uniform(0.0, 1.0)  # generate random number
-        if lottery > probability[i]:        # node does not mine a new block
-            probability[i] = (1-probability[i]) * probability[i]  # probability of finding block next round goes up 
-        else:                               # node mines a new block
-            block_num = block_num + 1       # increment block number
-            new_block(i, block_num)         # function creates a new block; current node is "lucky"
-            probability[i] = probability_dt[i] # reset miner's probability
-            print("new block mined by")     # output: which miner got lucky
-            print(i)
+for trial in range(1, 20):
             
-    # Check for consensus in the network 
-    consensus_times = list()    
-    cons[0,0] = copy.copy(cons[0,1]) # first column is previous consensus status
-    cons[0,1] = consensus()          # update second column with current consensus status
-    if cons[0,0] != cons[0,1]:       # consensus status has changed
-        if cons[0,1] == True:        # if network is in consensus
-            print("consensus reached after t =") 
-            print(t)
-            consensus_times.append(t) # record times that consensus was reached
-       
-    # Update information for next round            
-    t=t+1                                         # increment time
-    gossipers = info_list[:,0][info_list[:,1]==1] # find nodes in state one
-    gossipers = [int(i) for i in gossipers]       # convert to integrals 
-     
+    while t <10000 :
+    
+        gossiping() # one round of gossip
+        
+        gossiping_round = gossiping_round + 1 # increment number of rounds
+        # print("gossiping round number:")
+        # print(gossiping_round)
+        
+        
+        # Block creation, keeping in mind that for all non-miners probability=0
+        for i in range(num_nodes):              # iterate through all nodes
+            lottery = random.uniform(0.0, 1.0)  # generate random number
+            if lottery > probability[i]:        # node does not mine a new block
+                probability[i] = (1-probability[i]) * probability[i]  # probability of finding block next round goes up 
+            else:                               # node mines a new block
+                block_num = block_num + 1       # increment block number
+                new_block(i, block_num)         # function creates a new block; current node is "lucky"
+                probability[i] = probability_dt[i] # reset miner's probability
+                print("new block mined by")     # output: which miner got lucky
+                print(i)
+                
+        # Check for consensus in the network    
+        cons[0,0] = copy.copy(cons[0,1]) # first column is previous consensus status
+        cons[0,1] = consensus()          # update second column with current consensus status
+        if cons[0,0] != cons[0,1]:       # consensus status has changed
+            if cons[0,1] == True:        # if network is in consensus
+                print("consensus reached after t =") 
+                print(t)
+                consensus_times.append(t) # record times that consensus was reached
+           
+        # Update information for next round            
+        t=t+1                                         # increment time
+        gossipers = info_list[:,0][info_list[:,1]==1] # find nodes in state one
+        gossipers = [int(i) for i in gossipers]       # convert to integrals 
+         
+    
+    # Record results     
+    chain_len = [len(last_block[i]) for i in range(num_nodes)]  # find the main (longest) chain(s)
+    longest_chain_index = chain_len.index(max(chain_len))       # record the index (if multiple chains are equally long, chooses one) 
+    longest_chain = copy.copy(last_block[longest_chain_index])  # longest chain's block
+    check_block = list(range(longest_chain[-1]+1))              # create a comparison chain with no gaps
+    orphans = list(set(check_block) - set(longest_chain))       # compare longest chain with comparison chain, missing blocks are orphans
+    num_orphans = len(orphans)                                  # record number of orphaned blocks
+    num_total = block_num                                       # record total number of blocks mined
+    num_onchain = len(longest_chain)                            # record total number of blocks on the main chain
+    num_consensus = len(consensus_times)                        # record number of times consensus was reached
+    
+    ratio = num_orphans/num_total
 
-# Record results     
-chain_len = [len(last_block[i]) for i in range(num_nodes)]  # find the main (longest) chain(s)
-longest_chain_index = chain_len.index(max(chain_len))       # record the index (if multiple chains are equally long, chooses one) 
-longest_chain = copy.copy(last_block[longest_chain_index])  # longest chain's block
-check_block = list(range(longest_chain[-1]+1))              # create a comparison chain with no gaps
-orphans = list(set(check_block) - set(longest_chain))       # compare longest chain with comparison chain, missing blocks are orphans
-num_orphans = len(orphans)                                  # record number of orphaned blocks
-num_total = block_num                                       # record total number of blocks mined
-num_onchain = len(longest_chain)                            # record total number of blocks on the main chain
 
+    orphanedblocks.append(num_orphans)
+    trials.append(trial)
+    trial = trial + 1 
+    print("trial")
+    print(trial)
+  
