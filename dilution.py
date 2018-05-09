@@ -161,69 +161,70 @@ def gossiping():
 ###############################################################################
 #Initialize Variables
 ###############################################################################                      
-                      
-# Initialize the network
-network = random_graph(num_nodes, nodes_conn)   # call network function
-neighbor_list=network[1]                        # create list of each node's neighbors                 
-
-# Create empty matrix of nodes and information
-info_list=np.zeros((num_nodes,3))               # 1:node IDs 2:status 3:mining probabilities
-info_list[:,0]=list(range(num_nodes))           # update column 1: node IDs
-
-# Make block IDs for the current block in each node's chain
-last_block =[[(0)] for i in range(num_nodes)]
-
-# Counter of new blocks in order of creation
-block_num = 1
-                    
-# Create a random first block with ID 1
-new = random.randrange(0, num_nodes) # choose a random node 
-info_list[new,1] = 1                 # change random node's state to gossiping
-last_block[new] = [0,1]              # Record block ID to node's chain
-
-# Create a list to keep track the block creation sequence
-list_blockIDs = list()          # intialize empty list
-list_blockIDs.append([0])       # add block 0 (all nodes start out with)
-list_blockIDs.append([0, 1])    # add block 1 (was manually inserted)
-
-# Endow each node with computational power = number of trials it needs to solve cryptographic problem
-comp_power = np.random.exponential(expo_scale, int(num_nodes*(1-dilusion_rate))) # computing power for fraction of nodes that are miners (non-mining nodes are 0)
-miners = random.sample(range(num_nodes), int(num_nodes*(1-dilusion_rate)))       # choose random miners
-info_list[miners,2] = comp_power                                                 # update info list column 3 for miners
-probability_dt = (info_list[:,2]/sum(info_list[:,2]))/100                        # probability that a specific node mines a new block (node's comp. power / sum of all node's comp. power)
-probability = copy.copy(probability_dt)                                          # variable that will be used below
     
-# Calculate network delays for all nodes
-delay_list = list()                                         # initialize empty list
-for i in range(num_nodes):                                  # for each node add delay times to its list
-   add = delay_time(network_delay, len(neighbor_list[i]))
-   delay_list.append(add)
 
-# Find the gossipers
-gossipers = info_list[:,0][info_list[:,1]==1] # find nodes in state one
-gossipers = [int(i) for i in gossipers]       # convert to integrals 
+for trial in range(1, 20):
+                      
+    # Initialize the network
+    network = random_graph(num_nodes, nodes_conn)   # call network function
+    neighbor_list=network[1]                        # create list of each node's neighbors                 
+    
+    # Create empty matrix of nodes and information
+    info_list=np.zeros((num_nodes,3))               # 1:node IDs 2:status 3:mining probabilities
+    info_list[:,0]=list(range(num_nodes))           # update column 1: node IDs
+    
+    # Make block IDs for the current block in each node's chain
+    last_block =[[(0)] for i in range(num_nodes)]
+    
+    # Counter of new blocks in order of creation
+    block_num = 1
+                        
+    # Create a random first block with ID 1
+    new = random.randrange(0, num_nodes) # choose a random node 
+    info_list[new,1] = 1                 # change random node's state to gossiping
+    last_block[new] = [0,1]              # Record block ID to node's chain
+    
+    # Create a list to keep track the block creation sequence
+    list_blockIDs = list()          # intialize empty list
+    list_blockIDs.append([0])       # add block 0 (all nodes start out with)
+    list_blockIDs.append([0, 1])    # add block 1 (was manually inserted)
+    
+    # Endow each node with computational power = number of trials it needs to solve cryptographic problem
+    comp_power = np.random.exponential(expo_scale, int(num_nodes*(1-dilusion_rate))) # computing power for fraction of nodes that are miners (non-mining nodes are 0)
+    miners = random.sample(range(num_nodes), int(num_nodes*(1-dilusion_rate)))       # choose random miners
+    info_list[miners,2] = comp_power                                                 # update info list column 3 for miners
+    probability_dt = (info_list[:,2]/sum(info_list[:,2]))/100                        # probability that a specific node mines a new block (node's comp. power / sum of all node's comp. power)
+    probability = copy.copy(probability_dt)                                          # variable that will be used below
+        
+    # Calculate network delays for all nodes
+    delay_list = list()                                         # initialize empty list
+    for i in range(num_nodes):                                  # for each node add delay times to its list
+       add = delay_time(network_delay, len(neighbor_list[i]))
+       delay_list.append(add)
+    
+    # Find the gossipers
+    gossipers = info_list[:,0][info_list[:,1]==1] # find nodes in state one
+    gossipers = [int(i) for i in gossipers]       # convert to integrals 
+    
+    # Create copy of the neighbor list to keep track of which nodes have been gossiped to for a specific block
+    neighbors = copy.copy(neighbor_list) # create copy for deleting and adding listeners to
+    #neighbors = [neighbor_list[i] for i in gossipers] #neighbors to those nodes in state one
+    
+    # Variable to check whether a new consensus has been reached
+    cons = np.zeros((1,2))
+    consensus_times = [] 
+    
+    # Time and gossiping round begin at zero
+    t=0 
 
-# Create copy of the neighbor list to keep track of which nodes have been gossiped to for a specific block
-neighbors = copy.copy(neighbor_list) # create copy for deleting and adding listeners to
-#neighbors = [neighbor_list[i] for i in gossipers] #neighbors to those nodes in state one
-
-# Variable to check whether a new consensus has been reached
-cons = np.zeros((1,2))
-consensus_times = [] 
-
-# Time and gossiping round begin at zero
-t=0 
-gossiping_round = 0
-trial = 1
-trials = []
-orphanedblocks = list()
-
+    
          
 ###############################################################################
 # Run the code
 ###############################################################################    
 
-for trial in range(1, 20):
+
+    
             
     while t <10000 :
     
@@ -243,8 +244,8 @@ for trial in range(1, 20):
                 block_num = block_num + 1       # increment block number
                 new_block(i, block_num)         # function creates a new block; current node is "lucky"
                 probability[i] = probability_dt[i] # reset miner's probability
-                print("new block mined by")     # output: which miner got lucky
-                print(i)
+               # print("new block mined by")     # output: which miner got lucky
+               # print(i)
                 
         # Check for consensus in the network    
         cons[0,0] = copy.copy(cons[0,1]) # first column is previous consensus status
@@ -273,11 +274,12 @@ for trial in range(1, 20):
     num_consensus = len(consensus_times)                        # record number of times consensus was reached
     
     ratio = num_orphans/num_total
-
+    print("Trial")
+    print(trial)
+    print(num_orphans)
 
     orphanedblocks.append(num_orphans)
-    trials.append(trial)
-    trial = trial + 1 
-    print("trial")
-    print(trial)
+    
+    
+
   
