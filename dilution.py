@@ -264,8 +264,8 @@ for dilusion_rate in dilusion_rates:
             cons[0,1] = consensus()          # update second column with current consensus status
             if cons[0,0] != cons[0,1]:       # consensus status has changed
                 if cons[0,1] == True:        # if network is in consensus
-                    #print("consensus reached after t =") 
-                    #print(t)
+                    print("consensus reached after t =") 
+                    print(t)
                     consensus_times.append(t) # record times that consensus was reached
                
             # Update information for next round            
