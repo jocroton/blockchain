@@ -156,13 +156,17 @@ def gossiping():
              elif len(last_block[gossiper]) == len(last_block[listener]):    # if both chains are equally long
                   if (last_block[gossiper][-1] > last_block[listener][-1]):  # last element in gossiper's chain is bigger (older) than the listener's
                       last_block[listener] = copy.copy(last_block[gossiper]) # listener adopts gossiper's chain
-                        
+  
 
+res_orphanedblocks = []
+res_totalblocks = []
+res_onchain = []
+res_consensusnum = []
+res_orphanedblocks = []
 ###############################################################################
 #Initialize Variables
 ###############################################################################                      
     
-
 for trial in range(1, 20):
                       
     # Initialize the network
@@ -230,7 +234,7 @@ for trial in range(1, 20):
     
         gossiping() # one round of gossip
         
-        gossiping_round = gossiping_round + 1 # increment number of rounds
+        # gossiping_round = gossiping_round + 1 # increment number of rounds
         # print("gossiping round number:")
         # print(gossiping_round)
         
@@ -278,7 +282,11 @@ for trial in range(1, 20):
     print(trial)
     print(num_orphans)
 
-    orphanedblocks.append(num_orphans)
+    res_orphanedblocks.append(num_orphans)
+    res_totalblocks.append(num_total)
+    res_onchain.append(num_onchain)
+    res_consensusnum.append(num_consensus)
+
     
     
 
