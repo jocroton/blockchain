@@ -7,22 +7,26 @@ Created on Tue Apr 24 14:07:57 2018
 @authors: Johanna Croton, Nikolaj Bauer, Sebastian Haelg
 
 """
-# import packages
+# Import packages
 from __future__ import division
 import random
 import numpy as np
 import copy
+import matplotlib.pyplot as plt
 
-# set random seed
+
+# Set random seed
 random.seed(100)
 
-# set order parameters
-network_delay = 10  #lambda^-1
-discovery = []      #expected time between block discoveries
-num_nodes = 100     # number of nodes in the network
-nodes_conn = 8      # maximum number of connections    
-dilusion_rate = 0.2 #percentage of NON-miners
-expo_scale = 0.096  #Parameter for exponential distribution of comp power   
+# Set order parameters
+trials = 50
+time = 10000
+network_delay = 10                      # lambda^-1
+num_nodes = 1000                        # number of nodes in the network
+nodes_conns = [3, 4, 8, 16, 32, 64]     # maximum number of connections    
+dilusion_rates = 0                      # percentage of NON-miners
+expo_scale = 0.096                      # parameter for exponential distribution of computational power   
+
 
 
 ###############################################################################
@@ -101,7 +105,7 @@ def new_block(lucky, num):
     Creates a new block when called for "lucky" miner node using its parent block (blockID) and
     the current block number. 
     """
-    # set variables that are changed within the function to global scope
+    # Set variables that are changed within the function to global scope
     global last_block
     global info_list
     global neighbors
@@ -110,8 +114,7 @@ def new_block(lucky, num):
     
     # Create the block
     block_ID = copy.copy(last_block[lucky])  # copy parent block from lucky miner
-    block_ID.append(num)                     # add current block number parent block
-    print(block_ID)                          
+    block_ID.append(num)                     # add current block number parent block                         
     list_blockIDs.append(block_ID)           # record each new block to global scope
     last_block[lucky] = copy.copy(block_ID)  # add the new block to lucky's chain
     
@@ -156,114 +159,157 @@ def gossiping():
              elif len(last_block[gossiper]) == len(last_block[listener]):    # if both chains are equally long
                   if (last_block[gossiper][-1] > last_block[listener][-1]):  # last element in gossiper's chain is bigger (older) than the listener's
                       last_block[listener] = copy.copy(last_block[gossiper]) # listener adopts gossiper's chain
-                        
+  
+    
+res_ratio = []              
+res_orphanedblocks = []
+res_totalblocks = []
+res_onchain = []
+res_consensusnum = []
+res_orphanedblocks = []
+res_avg_consensus_time = []
 
-###############################################################################
-#Initialize Variables
-###############################################################################                      
-                      
-# Initialize the network
-network = random_graph(num_nodes, nodes_conn)   # call network function
-neighbor_list=network[1]                        # create list of each node's neighbors                 
+results = []     
 
-# Create empty matrix of nodes and information
-info_list=np.zeros((num_nodes,3))               # 1:node IDs 2:status 3:mining probabilities
-info_list[:,0]=list(range(num_nodes))           # update column 1: node IDs
-
-# Make block IDs for the current block in each node's chain
-last_block =[[(0)] for i in range(num_nodes)]
-
-# Counter of new blocks in order of creation
-block_num = 1
+for nodes_conn in nodes_conns:
                     
-# Create a random first block with ID 1
-new = random.randrange(0, num_nodes) # choose a random node 
-info_list[new,1] = 1                 # change random node's state to gossiping
-last_block[new] = [0,1]              # Record block ID to node's chain
-
-# Create a list to keep track the block creation sequence
-list_blockIDs = list()          # intialize empty list
-list_blockIDs.append([0])       # add block 0 (all nodes start out with)
-list_blockIDs.append([0, 1])    # add block 1 (was manually inserted)
-
-# Endow each node with computational power = number of trials it needs to solve cryptographic problem
-comp_power = np.random.exponential(expo_scale, int(num_nodes*(1-dilusion_rate))) # computing power for fraction of nodes that are miners (non-mining nodes are 0)
-miners = random.sample(range(num_nodes), int(num_nodes*(1-dilusion_rate)))       # choose random miners
-info_list[miners,2] = comp_power                                                 # update info list column 3 for miners
-probability_dt = (info_list[:,2]/sum(info_list[:,2]))/100                        # probability that a specific node mines a new block (node's comp. power / sum of all node's comp. power)
-probability = copy.copy(probability_dt)                                          # variable that will be used below
-    
-# Calculate network delays for all nodes
-delay_list = list()                                         # initialize empty list
-for i in range(num_nodes):                                  # for each node add delay times to its list
-   add = delay_time(network_delay, len(neighbor_list[i]))
-   delay_list.append(add)
-
-# Find the gossipers
-gossipers = info_list[:,0][info_list[:,1]==1] # find nodes in state one
-gossipers = [int(i) for i in gossipers]       # convert to integrals 
-
-# Create copy of the neighbor list to keep track of which nodes have been gossiped to for a specific block
-neighbors = copy.copy(neighbor_list) # create copy for deleting and adding listeners to
-#neighbors = [neighbor_list[i] for i in gossipers] #neighbors to those nodes in state one
-
-# Variable to check whether a new consensus has been reached
-cons = np.zeros((1,2))
-
-# Time and gossiping round begin at zero
-t=0 
-gossiping_round = 0
-
-
-         
-###############################################################################
-# Run the code
-###############################################################################    
+    # Run 20 trials to get the average parameters
+    for trial in range(trials): 
         
-while t <10000 :
-
-    gossiping() # one round of gossip
-    
-    gossiping_round = gossiping_round + 1 # increment number of rounds
-    # print("gossiping round number:")
-    # print(gossiping_round)
-    
-    
-    # Block creation, keeping in mind that for all non-miners probability=0
-    for i in range(num_nodes):              # iterate through all nodes
-        lottery = random.uniform(0.0, 1.0)  # generate random number
-        if lottery > probability[i]:        # node does not mine a new block
-            probability[i] = (1-probability[i]) * probability[i]  # probability of finding block next round goes up 
-        else:                               # node mines a new block
-            block_num = block_num + 1       # increment block number
-            new_block(i, block_num)         # function creates a new block; current node is "lucky"
-            probability[i] = probability_dt[i] # reset miner's probability
-            print("new block mined by")     # output: which miner got lucky
-            print(i)
+        ###############################################################################
+        #Initialize Variables
+        ###############################################################################                   
+        # Initialize the network
+        network = random_graph(num_nodes, nodes_conn)   # call network function
+        neighbor_list=network[1]                        # create list of each node's neighbors                 
+        
+        # Create empty matrix of nodes and information
+        info_list=np.zeros((num_nodes,3))               # 1:node IDs 2:status 3:mining probabilities
+        info_list[:,0]=list(range(num_nodes))           # update column 1: node IDs
+        
+        # Make block IDs for the current block in each node's chain
+        last_block =[[(0)] for i in range(num_nodes)]
+        
+        
+        # Counter of new blocks in order of creation
+        block_num = 1
+                            
+        # Create a random first block with ID 1
+        new = random.randrange(0, num_nodes) # choose a random node 
+        info_list[new,1] = 1                 # change random node's state to gossiping
+        last_block[new] = [0,1]              # Record block ID to node's chain
+        
+        # Create a list to keep track the block creation sequence
+        list_blockIDs = list()          # intialize empty list
+        list_blockIDs.append([0])       # add block 0 (all nodes start out with)
+        list_blockIDs.append([0, 1])    # add block 1 (was manually inserted)
+        
+        # Endow each node with computational power = number of trials it needs to solve cryptographic problem
+        comp_power = np.random.exponential(expo_scale, int(num_nodes*(1-dilusion_rate))) # computing power for fraction of nodes that are miners (non-mining nodes are 0)
+        miners = random.sample(range(num_nodes), int(num_nodes*(1-dilusion_rate)))       # choose random miners
+        info_list[miners,2] = comp_power                                                 # update info list column 3 for miners
+        probability_dt = (info_list[:,2]/sum(info_list[:,2]))/100                        # probability that a specific node mines a new block (node's comp. power / sum of all node's comp. power)
+        probability = copy.copy(probability_dt)                                          # variable that will be used below
             
-    # Check for consensus in the network 
-    consensus_times = list()    
-    cons[0,0] = copy.copy(cons[0,1]) # first column is previous consensus status
-    cons[0,1] = consensus()          # update second column with current consensus status
-    if cons[0,0] != cons[0,1]:       # consensus status has changed
-        if cons[0,1] == True:        # if network is in consensus
-            print("consensus reached after t =") 
-            print(t)
-            consensus_times.append(t) # record times that consensus was reached
-       
-    # Update information for next round            
-    t=t+1                                         # increment time
-    gossipers = info_list[:,0][info_list[:,1]==1] # find nodes in state one
-    gossipers = [int(i) for i in gossipers]       # convert to integrals 
-     
-
-# Record results     
-chain_len = [len(last_block[i]) for i in range(num_nodes)]  # find the main (longest) chain(s)
-longest_chain_index = chain_len.index(max(chain_len))       # record the index (if multiple chains are equally long, chooses one) 
-longest_chain = copy.copy(last_block[longest_chain_index])  # longest chain's block
-check_block = list(range(longest_chain[-1]+1))              # create a comparison chain with no gaps
-orphans = list(set(check_block) - set(longest_chain))       # compare longest chain with comparison chain, missing blocks are orphans
-num_orphans = len(orphans)                                  # record number of orphaned blocks
-num_total = block_num                                       # record total number of blocks mined
-num_onchain = len(longest_chain)                            # record total number of blocks on the main chain
-
+        # Calculate network delays for all nodes
+        delay_list = list()                                         # initialize empty list
+        for i in range(num_nodes):                                  # for each node add delay times to its list
+           add = delay_time(network_delay, len(neighbor_list[i]))
+           delay_list.append(add)
+        
+        # Find the gossipers
+        gossipers = info_list[:,0][info_list[:,1]==1] # find nodes in state one
+        gossipers = [int(i) for i in gossipers]       # convert to integrals 
+        
+        # Create copy of the neighbor list to keep track of which nodes have been gossiped to for a specific block
+        neighbors = copy.copy(neighbor_list) # create copy for deleting and adding listeners to
+        #neighbors = [neighbor_list[i] for i in gossipers] #neighbors to those nodes in state one
+        
+        # Variable to check whether a new consensus has been reached
+        cons = np.zeros((1,2))
+        consensus_times = [(0)] 
+        
+        # Time and gossiping round begin at zero
+        t=0 
+    
+        
+             
+    ###############################################################################
+    # Run the code
+    ###############################################################################      
+                
+        while t < time:
+        
+            gossiping() # one round of gossip
+            
+            # gossiping_round = gossiping_round + 1 # increment number of rounds
+            # print("gossiping round number:")
+            # print(gossiping_round)
+            
+            
+            # Block creation, keeping in mind that for all non-miners probability=0
+            for i in range(num_nodes):              # iterate through all nodes
+                lottery = random.uniform(0.0, 1.0)  # generate random number
+                if lottery > probability[i]:        # node does not mine a new block
+                    probability[i] = (1-probability[i]) * probability[i]  # probability of finding block next round goes up 
+                else:                               # node mines a new block
+                    block_num = block_num + 1       # increment block number
+                    new_block(i, block_num)         # function creates a new block; current node is "lucky"
+                    probability[i] = probability_dt[i] # reset miner's probability
+                    #print("new block mined by")     # output: which miner got lucky
+                    #print(i)
+                    
+            # Check for consensus in the network    
+            cons[0,0] = copy.copy(cons[0,1]) # first column is previous consensus status
+            cons[0,1] = consensus()          # update second column with current consensus status
+            if cons[0,0] != cons[0,1]:       # consensus status has changed
+                if cons[0,1] == True:        # if network is in consensus
+                    #print("consensus reached after t =") 
+                    #print(t)
+                    consensus_times.append(t) # record times that consensus was reached
+               
+            # Update information for next round            
+            t=t+1                                         # increment time
+            gossipers = info_list[:,0][info_list[:,1]==1] # find nodes in state one
+            gossipers = [int(i) for i in gossipers]       # convert to integrals 
+             
+        
+        # Record results     
+        chain_len = [len(last_block[i]) for i in range(num_nodes)]  # find the main (longest) chain(s)
+        longest_chain_index = chain_len.index(max(chain_len))       # record the index (if multiple chains are equally long, chooses one) 
+        longest_chain = copy.copy(last_block[longest_chain_index])  # longest chain's block
+        check_block = list(range(longest_chain[-1]+1))              # create a comparison chain with no gaps
+        orphans = list(set(check_block) - set(longest_chain))       # compare longest chain with comparison chain, missing blocks are orphans
+        num_orphans = len(orphans)                                  # record number of orphaned blocks
+        num_total = block_num                                       # record total number of blocks mined
+        num_onchain = len(longest_chain)                            # record total number of blocks on the main chain
+        num_consensus = len(consensus_times)                        # record number of times consensus was reached
+        avg_consensus_time = consensus_times[-1]/len(consensus_times)
+        #print(avg_consensus_time)
+        
+        
+        ratio = num_orphans/num_total
+        
+        #collect trial results
+        res_ratio.append(ratio)
+        res_orphanedblocks.append(num_orphans)
+        res_totalblocks.append(num_total)
+        res_onchain.append(num_onchain)
+        res_consensusnum.append(num_consensus)
+        res_avg_consensus_time.append(avg_consensus_time)
+        
+        
+    #model results for parameter setting
+    orphaned_blocks = np.mean(res_orphanedblocks)
+    total_blocks = np.mean(res_totalblocks)
+    onchain_blocks = np.mean(res_onchain)
+    avg_consensus = np.mean(res_avg_consensus_time)
+    
+    result = [orphaned_blocks, total_blocks, ratio, onchain_blocks, avg_consensus]
+    print("connections:")
+    print(nodes_conn)
+    print("result:")
+    print(result)
+    results.append(result)
+    
+plt.plot([row[2] for row in results])
