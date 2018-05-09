@@ -266,3 +266,4 @@ num_orphans = len(orphans)                                  # record number of o
 num_total = block_num                                       # record total number of blocks mined
 num_onchain = len(longest_chain)                            # record total number of blocks on the main chain
 num_consensus = len(consensus_times)                        # record number of times consensus was reached
+

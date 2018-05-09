@@ -12,7 +12,7 @@ from __future__ import division
 import random
 import numpy as np
 import copy
-from copy import deepcopy
+
 
 # Set random seed
 random.seed(100)
@@ -21,7 +21,7 @@ random.seed(100)
 network_delay = 10  # lambda^-1
 num_nodes = 100     # number of nodes in the network
 nodes_conn = 8      # maximum number of connections    
-dilusion_rate = 0.9 # percentage of NON-miners
+dilusion_rate = 0.1 # percentage of NON-miners
 expo_scale = 0.096  # parameter for exponential distribution of computational power   
 
 
@@ -110,8 +110,7 @@ def new_block(lucky, num):
     
     # Create the block
     block_ID = copy.copy(last_block[lucky])  # copy parent block from lucky miner
-    block_ID.append(num)                     # add current block number parent block
-    print(block_ID)                          
+    block_ID.append(num)                     # add current block number parent block                         
     list_blockIDs.append(block_ID)           # record each new block to global scope
     last_block[lucky] = copy.copy(block_ID)  # add the new block to lucky's chain
     
@@ -157,12 +156,13 @@ def gossiping():
                   if (last_block[gossiper][-1] > last_block[listener][-1]):  # last element in gossiper's chain is bigger (older) than the listener's
                       last_block[listener] = copy.copy(last_block[gossiper]) # listener adopts gossiper's chain
   
-
+res_ratio = []
 res_orphanedblocks = []
 res_totalblocks = []
 res_onchain = []
 res_consensusnum = []
 res_orphanedblocks = []
+res_avg_consensus_time = []
 ###############################################################################
 #Initialize Variables
 ###############################################################################                      
@@ -179,6 +179,7 @@ for trial in range(1, 20):
     
     # Make block IDs for the current block in each node's chain
     last_block =[[(0)] for i in range(num_nodes)]
+    
     
     # Counter of new blocks in order of creation
     block_num = 1
@@ -216,7 +217,7 @@ for trial in range(1, 20):
     
     # Variable to check whether a new consensus has been reached
     cons = np.zeros((1,2))
-    consensus_times = [] 
+    consensus_times = [(0)] 
     
     # Time and gossiping round begin at zero
     t=0 
@@ -248,8 +249,8 @@ for trial in range(1, 20):
                 block_num = block_num + 1       # increment block number
                 new_block(i, block_num)         # function creates a new block; current node is "lucky"
                 probability[i] = probability_dt[i] # reset miner's probability
-               # print("new block mined by")     # output: which miner got lucky
-               # print(i)
+                #print("new block mined by")     # output: which miner got lucky
+                #print(i)
                 
         # Check for consensus in the network    
         cons[0,0] = copy.copy(cons[0,1]) # first column is previous consensus status
@@ -276,18 +277,25 @@ for trial in range(1, 20):
     num_total = block_num                                       # record total number of blocks mined
     num_onchain = len(longest_chain)                            # record total number of blocks on the main chain
     num_consensus = len(consensus_times)                        # record number of times consensus was reached
+    avg_consensus_time = consensus_times[-1]/len(consensus_times)
+    print(avg_consensus_time)
+    
     
     ratio = num_orphans/num_total
-    print("Trial")
-    print(trial)
-    print(num_orphans)
-
+    
+    #collect trial results
+    res_ratio.append(ratio)
     res_orphanedblocks.append(num_orphans)
     res_totalblocks.append(num_total)
     res_onchain.append(num_onchain)
     res_consensusnum.append(num_consensus)
+    res_avg_consensus_time.append(avg_consensus_time)
 
     
-    
+#model results for parameter setting
+orphaned_blocks = np.mean(res_orphanedblocks)
+total_blocks = np.mean(res_totalblocks)
+onchain_blocks = np.mean(res_onchain)
+avg_consensus = np.mean(res_avg_consensus_time)
 
-  
+
