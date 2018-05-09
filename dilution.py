@@ -22,7 +22,7 @@ random.seed(100)
 trials = 50
 time = 10000
 network_delay = 10                      # lambda^-1
-num_nodes = 100                         # number of nodes in the network
+num_nodes = 1000                        # number of nodes in the network
 nodes_conn = 8                          # maximum number of connections    
 dilusion_rates = np.arange(0, 1, 0.1)   # percentage of NON-miners
 expo_scale = 0.096                      # parameter for exponential distribution of computational power   
