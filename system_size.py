@@ -24,7 +24,7 @@ time = 10000
 network_delay = 10                      # lambda^-1
 num_nodes = 1000                        # number of nodes in the network
 nodes_conns = [3, 4, 8, 16, 32, 64]     # maximum number of connections    
-dilusion_rates = 0                      # percentage of NON-miners
+dilusion_rate = 0                      # percentage of NON-miners
 expo_scale = 0.096                      # parameter for exponential distribution of computational power   
 
 
@@ -287,7 +287,7 @@ for nodes_conn in nodes_conns:
         avg_consensus_time = consensus_times[-1]/len(consensus_times)
         #print(avg_consensus_time)
         
-        
+        print(trial)
         ratio = num_orphans/num_total
         
         #collect trial results
