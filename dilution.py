@@ -21,7 +21,7 @@ random.seed(100)
 network_delay = 10  # lambda^-1
 num_nodes = 100     # number of nodes in the network
 nodes_conn = 8      # maximum number of connections    
-dilusion_rate = 0.1 # percentage of NON-miners
+dilusion_rate = 0.9 # percentage of NON-miners
 expo_scale = 0.096  # parameter for exponential distribution of computational power   
 
 
@@ -295,7 +295,10 @@ for trial in range(1, 20):
 #model results for parameter setting
 orphaned_blocks = np.mean(res_orphanedblocks)
 total_blocks = np.mean(res_totalblocks)
+ratio = np.mean(res_ratio)
 onchain_blocks = np.mean(res_onchain)
 avg_consensus = np.mean(res_avg_consensus_time)
+
+result = [ratio, orphaned_blocks, total_blocks, onchain_blocks, avg_consensus]
 
 
