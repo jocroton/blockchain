@@ -19,8 +19,10 @@ import matplotlib.pyplot as plt
 random.seed(100)
 
 # Set order parameters
-trials = 50
-network_delays = np.arange(1, 50, 1)  # lambda^-1
+
+
+trials = 10
+network_delays =  (0.1, 1, 10, 100, 1000, 10000, 100000) # lambda^-1
 num_nodes = 100     # number of nodes in the network
 nodes_conn = 8      # maximum number of connections    
 dilusion_rate = 0 # percentage of NON-miners
@@ -91,7 +93,7 @@ def delay_time(L, n):
     to two neighbors, ect. such that the time intervall between the gossiping events follows a 
     poisson distribution.    
     """  
-    epsilon = np.random.poisson(L, n+1)
+    epsilon = np.random.exponential(L, n+1)
     delay=list()
     delay.append(epsilon[0])
     for e in range(n-1):
@@ -314,6 +316,9 @@ for network_delay in network_delays:
     avg_consensus = np.mean(res_avg_consensus_time)
     
     result = [ratio, orphaned_blocks, total_blocks, onchain_blocks, avg_consensus]
+    print("results for Lambda = ")
+    print(network_delay)
+    print(result)
     
     results.append(result)
 
@@ -321,3 +326,4 @@ orphans = []
 plt.plot([row[1] for row in results])
 plt.plot([row[0] for row in results])
 plt.plot([row[4] for row in results])
+plt.plot([row[3] for row in results])
