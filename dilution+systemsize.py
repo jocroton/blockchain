@@ -278,7 +278,8 @@ for dilusion_rate in dilusion_rates:
                 gossipers = [int(i) for i in gossipers]       # convert to integrals 
                  
             
-            # Record results     
+            # Record results  
+            chain_len = [len(last_block[i]) for i in range(num_nodes)]  # find the main (longest) chain(s)
             longest_chain_index = [i for i, x in enumerate(chain_len) if x==max(chain_len)]      # record the index (if multiple chains are equally long, chooses one) 
             longest_chain = copy.copy([last_block[i] for i in longest_chain_index])             # longest chain's block
             newest_block = max([longest_chain[i][-1] for i in range(len(longest_chain))])       #the last block mined
