@@ -317,8 +317,8 @@ for dilusion_rate in dilusion_rates:
         ratio = np.mean(res_ratio)
         
         result = [orphaned_blocks, total_blocks, ratio, onchain_blocks, avg_consensus, consensus_nums]
-        print("connections:")
-        print(nodes_conn)
+        print("delaytime:")
+        print(delay_time)
         print("result:")
         print(result)
         results.append(result)
