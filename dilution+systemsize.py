@@ -92,7 +92,7 @@ def delay_time(L, n):
     to two neighbors, ect. such that the time intervall between the gossiping events follows a 
     poisson distribution.    
     """  
-    epsilon = np.random.poisson(L, n+1)
+    epsilon = np.random.exponential(L, n+1)
     delay=list()
     delay.append(epsilon[0])
     for e in range(n-1):
