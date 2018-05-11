@@ -13,6 +13,7 @@ import random
 import numpy as np
 import copy
 import matplotlib.pyplot as plt
+import math
 
 
 # Set random seed
@@ -23,8 +24,8 @@ random.seed(100)
 
 trials = 10
 network_delays =  (0.1, 1, 10, 100, 1000, 10000, 100000, 1000000) # lambda^-1
-num_nodes = 100     # number of nodes in the network
-nodes_conn = 8      # maximum number of connections    
+num_nodes = 1000     # number of nodes in the network
+nodes_conn = 32      # maximum number of connections    
 dilusion_rate = 0 # percentage of NON-miners
 expo_scale = 0.096  # parameter for exponential distribution of computational power  
 results = []
@@ -316,6 +317,7 @@ for network_delay in network_delays:
     total_blocks = np.mean(res_totalblocks)
     ratio = np.mean(res_ratio)
     onchain_blocks = np.mean(res_onchain)
+    
     avg_consensus = np.mean(res_avg_consensus_time)
     
     result = [ratio, orphaned_blocks, total_blocks, onchain_blocks, avg_consensus]
@@ -330,3 +332,13 @@ plt.plot([row[1] for row in results])
 plt.plot([row[0] for row in results])
 plt.plot([row[4] for row in results])
 plt.plot([row[3] for row in results])
+plt.plot([row[2] for row in results])
+
+plt.xlabel("Network Delays")
+plt.ylabel("Orphaned/Total")
+plt.title("num. Nodes = 1000")
+plt.xscale("log")
+plt.plot(plt.plot(network_delays, [row[0] for row in results]))
+
+plt.show()
+
