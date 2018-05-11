@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 random.seed(100)
 
 # Set order parameters
-trials = 50
+trials = 10
 time = 10000
 network_delay = 10                      # lambda^-1
 num_nodes = 1000                        # number of nodes in the network
@@ -161,29 +161,30 @@ def gossiping():
                       last_block[listener] = copy.copy(last_block[gossiper]) # listener adopts gossiper's chain
   
     
-res_ratio = []              
-res_orphanedblocks = []
-res_totalblocks = []
-res_onchain = []
-res_consensusnum = []
-res_orphanedblocks = []
-res_avg_consensus_time = []
-
-results = []     
 fullresults = []
 
 for dilusion_rate in dilusion_rates:
+    results = [] 
     
     for nodes_conn in nodes_conns:
-      
+        res_ratio = []              
+        res_orphanedblocks = []
+        res_totalblocks = []
+        res_onchain = []
+        res_consensusnum = []
+        res_orphanedblocks = []
+        res_avg_consensus_time = []
+        result = [] 
+        
+        
+        # Initialize the network
+        network = random_graph(num_nodes, nodes_conn)   # call network function
         # Run 50 trials to get the average parameters
         for trial in range(trials): 
             
             ###############################################################################
             #Initialize Variables
             ###############################################################################                   
-            # Initialize the network
-            network = random_graph(num_nodes, nodes_conn)   # call network function
             neighbor_list=network[1]                        # create list of each node's neighbors                 
             
             # Create empty matrix of nodes and information
@@ -267,8 +268,8 @@ for dilusion_rate in dilusion_rates:
                 cons[0,1] = consensus()          # update second column with current consensus status
                 if cons[0,0] != cons[0,1]:       # consensus status has changed
                     if cons[0,1] == True:        # if network is in consensus
-                        print("consensus reached after t =") 
-                        print(t)
+                        #print("consensus reached after t =") 
+                        #print(t)
                         consensus_times.append(t) # record times that consensus was reached
                    
                 # Update information for next round            
@@ -286,11 +287,12 @@ for dilusion_rate in dilusion_rates:
             num_orphans = len(orphans)                                  # record number of orphaned blocks
             num_total = block_num                                       # record total number of blocks mined
             num_onchain = len(longest_chain)                            # record total number of blocks on the main chain
-            num_consensus = len(consensus_times)                        # record number of times consensus was reached
+            num_consensus = len(consensus_times)-1                      # record number of times consensus was reached (-1 because consensus times start with a 0)
             avg_consensus_time = consensus_times[-1]/len(consensus_times)
-            #print(avg_consensus_time)
+            print("num consensus:")
+            print(num_consensus)
             
-            print(trial)
+            #print(trial)
             ratio = num_orphans/num_total
             
             #collect trial results
@@ -315,12 +317,14 @@ for dilusion_rate in dilusion_rates:
         print("result:")
         print(result)
         results.append(result)
+        print("dilution:")
+        print(dilusion_rate)
+        print("results:")
+        print(results)
     
     fullresults.append(results)
-    print("dilution:")
-    print(dilusion_rate)
     print("fullresults:")
-    print(results)
+    print(fullresults)
 
     
 plt.plot([row[2] for row in results])
