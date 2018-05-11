@@ -23,7 +23,7 @@ trials = 10
 time = 10000
 network_delays =  (0.1, 1, 10, 100, 1000, 10000, 100000) # lambda^-1
 num_nodes = 1000                        # number of nodes in the network
-nodes_conn = 3                          # maximum number of connections    
+nodes_conn = 64                          # maximum number of connections    
 dilusion_rates = np.arange(0, 1, 0.1)   # percentage of NON-miners
 expo_scale = 0.096                      # parameter for exponential distribution of computational power   
 
@@ -293,7 +293,7 @@ for dilusion_rate in dilusion_rates:
             num_consensus = len(consensus_times)-1                        # record number of times consensus was reached
             avg_consensus_time = consensus_times[-1]/len(consensus_times)
             print("num consensus:")
-            print(delay_time)
+            print(num_consensus)
             print("ratio:")
             ratio = num_orphans/num_total
             print(ratio)
