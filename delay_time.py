@@ -22,7 +22,7 @@ random.seed(100)
 
 
 trials = 10
-network_delays =  (0.1, 1, 10, 100, 1000, 10000, 100000) # lambda^-1
+network_delays =  (0.1, 1, 10, 100, 1000, 10000, 100000, 1000000) # lambda^-1
 num_nodes = 100     # number of nodes in the network
 nodes_conn = 8      # maximum number of connections    
 dilusion_rate = 0 # percentage of NON-miners
@@ -285,19 +285,22 @@ for network_delay in network_delays:
         
         # Record results     
         chain_len = [len(last_block[i]) for i in range(num_nodes)]  # find the main (longest) chain(s)
-        longest_chain_index = chain_len.index(max(chain_len))       # record the index (if multiple chains are equally long, chooses one) 
-        longest_chain = copy.copy(last_block[longest_chain_index])  # longest chain's block
-        check_block = list(range(longest_chain[-1]+1))              # create a comparison chain with no gaps
-        orphans = list(set(check_block) - set(longest_chain))       # compare longest chain with comparison chain, missing blocks are orphans
+        
+        longest_chain_index = [i for i, x in enumerate(chain_len) if x==max(chain_len)]      # record the index (if multiple chains are equally long, chooses one) 
+        longest_chain = copy.copy([last_block[i] for i in longest_chain_index])             # longest chain's block
+        newest_block = max([longest_chain[i][-1] for i in range(len(longest_chain))])       #the last block mined
+        check_block = list(range(newest_block + 1))                                         
+        oldest_block = min([longest_chain[i][-1] for i in range(len(longest_chain))])
+        main_chain = [i[1] for i in enumerate(longest_chain) if i[1][-1] == oldest_block]
+        orphans = list(set(check_block) - set(main_chain[0]))       # compare main chain with comparison chain, missing blocks are orphans
         num_orphans = len(orphans)                                  # record number of orphaned blocks
-        num_total = block_num                                       # record total number of blocks mined
-        num_onchain = len(longest_chain)                            # record total number of blocks on the main chain
+        num_total = newest_block                                       # record total number of blocks mined
+        num_onchain = len(main_chain[0])                            # record total number of blocks on the main chain
         num_consensus = len(consensus_times)                        # record number of times consensus was reached
         avg_consensus_time = consensus_times[-1]/len(consensus_times)
         print(avg_consensus_time)
-        
-        
         ratio = num_orphans/num_total
+        
         
         #collect trial results
         res_ratio.append(ratio)
