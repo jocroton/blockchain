@@ -278,20 +278,24 @@ for dilusion_rate in dilusion_rates:
                 gossipers = [int(i) for i in gossipers]       # convert to integrals 
                  
             
-            # Record results     
+            # Record results  
             chain_len = [len(last_block[i]) for i in range(num_nodes)]  # find the main (longest) chain(s)
-            longest_chain_index = chain_len.index(max(chain_len))       # record the index (if multiple chains are equally long, chooses one) 
-            longest_chain = copy.copy(last_block[longest_chain_index])  # longest chain's block
-            check_block = list(range(longest_chain[-1]+1))              # create a comparison chain with no gaps
-            orphans = list(set(check_block) - set(longest_chain))       # compare longest chain with comparison chain, missing blocks are orphans
+            longest_chain_index = [i for i, x in enumerate(chain_len) if x==max(chain_len)]      # record the index (if multiple chains are equally long, chooses one) 
+            longest_chain = copy.copy([last_block[i] for i in longest_chain_index])             # longest chain's block
+            newest_block = max([longest_chain[i][-1] for i in range(len(longest_chain))])       #the last block mined
+            check_block = list(range(newest_block + 1))                                         
+            oldest_block = min([longest_chain[i][-1] for i in range(len(longest_chain))])
+            main_chain = [i[1] for i in enumerate(longest_chain) if i[1][-1] == oldest_block]
+            orphans = list(set(check_block) - set(main_chain[0]))       # compare main chain with comparison chain, missing blocks are orphans
             num_orphans = len(orphans)                                  # record number of orphaned blocks
-            num_total = block_num                                       # record total number of blocks mined
-            num_onchain = len(longest_chain)                            # record total number of blocks on the main chain
-            num_consensus = len(consensus_times)-1                      # record number of times consensus was reached (-1 because consensus times start with a 0)
+            num_total = newest_block                                       # record total number of blocks mined
+            num_onchain = len(main_chain[0])                            # record total number of blocks on the main chain
+            num_consensus = len(consensus_times)-1                        # record number of times consensus was reached
             avg_consensus_time = consensus_times[-1]/len(consensus_times)
             print("num consensus:")
             print(num_consensus)
-            
+            print("ratio:")
+            print(ratio)
             #print(trial)
             ratio = num_orphans/num_total
             
@@ -310,6 +314,7 @@ for dilusion_rate in dilusion_rates:
         onchain_blocks = np.mean(res_onchain)
         avg_consensus = np.mean(res_avg_consensus_time)
         consensus_nums = np.mean(res_consensusnum)
+        ratio = np.mean(res_ratio)
         
         result = [orphaned_blocks, total_blocks, ratio, onchain_blocks, avg_consensus, consensus_nums]
         print("connections:")
