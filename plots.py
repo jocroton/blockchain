@@ -211,9 +211,9 @@ plt.xlabel("Network Delays")
 plt.ylabel("# Consenus Reached")
 plt.title("Nodes = 100, Connections = 8")
 plt.xscale("log")
-[plt.plot(network_delays, [column[5] for column in fullresults002[i]]) for i in range(len(fullresults002))]
+[plt.plot(network_delays, [column[5] for column in fullresults[i]]) for i in range(len(fullresults))]
 plt.legend([round(i, 2) for i in dilusion_rates], loc='upper left', bbox_to_anchor=(1,1), shadow=True, title="Dilution rate")
-plt.savefig('C:/Users/johan/Documents/GitHub/blockchain/100 Nodes, 8 Conns/numconsensus100.png', bbox_inches='tight')
+plt.savefig('C:/Users/johan/Documents/GitHub/blockchain/100 Nodes, 8 Conns/numconsensus100_8_netout.png', bbox_inches='tight')
 plt.show()
 
 # Number of orphaned blocks
@@ -221,9 +221,9 @@ plt.xlabel("Network Delays")
 plt.ylabel("# Orphaned Blocks")
 plt.title("Nodes = 100, Connections = 8")
 plt.xscale("log")
-[plt.plot(network_delays, [column[0] for column in fullresults002[i]]) for i in range(len(fullresults002))]
+[plt.plot(network_delays, [column[0] for column in fullresults[i]]) for i in range(len(fullresults))]
 plt.legend([round(i, 2) for i in dilusion_rates], loc='upper left', bbox_to_anchor=(1,1), shadow=True, title="Dilution rate")
-plt.savefig('C:/Users/johan/Documents/GitHub/blockchain/100 Nodes, 8 Conns/orphans100.png', bbox_inches='tight')
+plt.savefig('C:/Users/johan/Documents/GitHub/blockchain/100 Nodes, 8 Conns/orphans100_8_netout.png', bbox_inches='tight')
 plt.show()
 
 # Number of total blocks
@@ -231,9 +231,9 @@ plt.xlabel("Network Delays")
 plt.ylabel("# Total Blocks")
 plt.title("Nodes = 100, Connections = 8")
 plt.xscale("log")
-[plt.plot(network_delays, [column[1] for column in fullresults002[i]]) for i in range(len(fullresults002))]
+[plt.plot(network_delays, [column[1] for column in fullresults[i]]) for i in range(len(fullresults))]
 plt.legend([round(i, 2) for i in dilusion_rates], loc='upper left', bbox_to_anchor=(1,1), shadow=True, title="Dilution rate")
-plt.savefig('C:/Users/johan/Documents/GitHub/blockchain/100 Nodes, 8 Conns/totalblocks100.png', bbox_inches='tight')
+plt.savefig('C:/Users/johan/Documents/GitHub/blockchain/100 Nodes, 8 Conns/totalblocks100_8_netout.png', bbox_inches='tight')
 plt.show()
 
 # Ratio
@@ -241,9 +241,9 @@ plt.xlabel("Network Delays")
 plt.ylabel("Orphaned Blocks / Total Blocks")
 plt.title("Nodes = 100, Connections = 8")
 plt.xscale("log")
-[plt.plot(network_delays, [column[2] for column in fullresults002[i]]) for i in range(len(fullresults002))]
+[plt.plot(network_delays, [column[2] for column in fullresults[i]]) for i in range(len(fullresults))]
 plt.legend([round(i, 2) for i in dilusion_rates], loc='upper left', bbox_to_anchor=(1,1), shadow=True, title="Dilution rate")
-plt.savefig('C:/Users/johan/Documents/GitHub/blockchain/100 Nodes, 8 Conns/ratio100.png', bbox_inches='tight')
+plt.savefig('C:/Users/johan/Documents/GitHub/blockchain/100 Nodes, 8 Conns/ratio100_8_netout.png', bbox_inches='tight')
 plt.show()
 
 # Onchain Blocks
@@ -251,9 +251,9 @@ plt.xlabel("Network Delays")
 plt.ylabel("# Onchain Blocks")
 plt.title("Nodes = 100, Connections = 8")
 plt.xscale("log")
-[plt.plot(network_delays, [column[3] for column in fullresults002[i]]) for i in range(len(fullresults002))]
+[plt.plot(network_delays, [column[3] for column in fullresults[i]]) for i in range(len(fullresults))]
 plt.legend([round(i, 2) for i in dilusion_rates], loc='upper left', bbox_to_anchor=(1,1), shadow=True, title="Dilution rate")
-plt.savefig('C:/Users/johan/Documents/GitHub/blockchain/100 Nodes, 8 Conns/onchain100.png', bbox_inches='tight')
+plt.savefig('C:/Users/johan/Documents/GitHub/blockchain/100 Nodes, 8 Conns/onchain100_8_netout.png', bbox_inches='tight')
 plt.show()
 
 # Onchain Blocks
@@ -261,7 +261,71 @@ plt.xlabel("Network Delays")
 plt.ylabel("Average Time until Consensus")
 plt.title("Nodes = 100, Connections = 8")
 plt.xscale("log")
-[plt.plot(network_delays, [column[4] for column in fullresults002[i]]) for i in range(len(fullresults002))]
+[plt.plot(network_delays, [column[4] for column in fullresults[i]]) for i in range(len(fullresults))]
 plt.legend([round(i, 2) for i in dilusion_rates], loc='upper left', bbox_to_anchor=(1,1), shadow=True, title="Dilution rate")
-plt.savefig('C:/Users/johan/Documents/GitHub/blockchain/100 Nodes, 8 Conns/avgtime100.png', bbox_inches='tight')
+plt.savefig('C:/Users/johan/Documents/GitHub/blockchain/100 Nodes, 8 Conns/avgtime100_8_netout.png', bbox_inches='tight')
 plt.show()
+
+###############################################################################
+# Connections = 64
+
+# Number of Consensus
+plt.xlabel("Network Delays")
+plt.ylabel("# Consenus Reached")
+plt.title("Nodes = 100, Connections = 64")
+plt.xscale("log")
+[plt.plot(network_delays, [column[5] for column in fullresults003[i]]) for i in range(len(fullresults003))]
+plt.legend([round(i, 2) for i in dilusion_rates], loc='upper left', bbox_to_anchor=(1,1), shadow=True, title="Dilution rate")
+plt.savefig('C:/Users/johan/Documents/GitHub/blockchain/100 Nodes, 64 Conns/numconsensus100_64.png', bbox_inches='tight')
+plt.show()
+
+# Number of orphaned blocks
+plt.xlabel("Network Delays")
+plt.ylabel("# Orphaned Blocks")
+plt.title("Nodes = 100, Connections = 64")
+plt.xscale("log")
+[plt.plot(network_delays, [column[0] for column in fullresults003[i]]) for i in range(len(fullresults003))]
+plt.legend([round(i, 2) for i in dilusion_rates], loc='upper left', bbox_to_anchor=(1,1), shadow=True, title="Dilution rate")
+plt.savefig('C:/Users/johan/Documents/GitHub/blockchain/100 Nodes, 64 Conns/orphans100_64.png', bbox_inches='tight')
+plt.show()
+
+# Number of total blocks
+plt.xlabel("Network Delays")
+plt.ylabel("# Total Blocks")
+plt.title("Nodes = 100, Connections = 64")
+plt.xscale("log")
+[plt.plot(network_delays, [column[1] for column in fullresults003[i]]) for i in range(len(fullresults003))]
+plt.legend([round(i, 2) for i in dilusion_rates], loc='upper left', bbox_to_anchor=(1,1), shadow=True, title="Dilution rate")
+plt.savefig('C:/Users/johan/Documents/GitHub/blockchain/100 Nodes, 64 Conns/totalblocks100_64.png', bbox_inches='tight')
+plt.show()
+
+# Ratio
+plt.xlabel("Network Delays")
+plt.ylabel("Orphaned Blocks / Total Blocks")
+plt.title("Nodes = 100, Connections = 64")
+plt.xscale("log")
+[plt.plot(network_delays, [column[2] for column in fullresults003[i]]) for i in range(len(fullresults003))]
+plt.legend([round(i, 2) for i in dilusion_rates], loc='upper left', bbox_to_anchor=(1,1), shadow=True, title="Dilution rate")
+plt.savefig('C:/Users/johan/Documents/GitHub/blockchain/100 Nodes, 64 Conns/ratio100_64.png', bbox_inches='tight')
+plt.show()
+
+# Onchain Blocks
+plt.xlabel("Network Delays")
+plt.ylabel("# Onchain Blocks")
+plt.title("Nodes = 100, Connections = 64")
+plt.xscale("log")
+[plt.plot(network_delays, [column[3] for column in fullresults003[i]]) for i in range(len(fullresults003))]
+plt.legend([round(i, 2) for i in dilusion_rates], loc='upper left', bbox_to_anchor=(1,1), shadow=True, title="Dilution rate")
+plt.savefig('C:/Users/johan/Documents/GitHub/blockchain/100 Nodes, 64 Conns/onchain100_64.png', bbox_inches='tight')
+plt.show()
+
+# Onchain Blocks
+plt.xlabel("Network Delays")
+plt.ylabel("Average Time until Consensus")
+plt.title("Nodes = 100, Connections = 64")
+plt.xscale("log")
+[plt.plot(network_delays, [column[4] for column in fullresults003[i]]) for i in range(len(fullresults003))]
+plt.legend([round(i, 2) for i in dilusion_rates], loc='upper left', bbox_to_anchor=(1,1), shadow=True, title="Dilution rate")
+plt.savefig('C:/Users/johan/Documents/GitHub/blockchain/100 Nodes, 64 Conns/avgtime100_64.png', bbox_inches='tight')
+plt.show()
+

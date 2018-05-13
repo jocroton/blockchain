@@ -22,8 +22,8 @@ random.seed(100)
 trials = 10
 time = 10000
 network_delays =  (0.1, 1, 10, 100, 1000, 10000, 100000) # lambda^-1
-num_nodes = 100                        # number of nodes in the network
-nodes_conn = 64                          # maximum number of connections    
+num_nodes = 1000                        # number of nodes in the network
+nodes_conn = 8                          # maximum number of connections    
 dilusion_rates = np.arange(0, 1, 0.1)   # percentage of NON-miners
 expo_scale = 0.096                      # parameter for exponential distribution of computational power   
 
@@ -90,7 +90,7 @@ def delay_time(L, n):
     """
     Creates an array of delay times, i.e. the time it will take a node to gossip to one neighbor, 
     to two neighbors, ect. such that the time intervall between the gossiping events follows a 
-    poisson distribution.    
+    exponential distribution.    
     """  
     epsilon = np.random.exponential(L, n+1)
     delay=list()
@@ -177,14 +177,14 @@ for dilusion_rate in dilusion_rates:
         result = [] 
         
         
-        # Initialize the network
-        network = random_graph(num_nodes, nodes_conn)   # call network function
         # Run 50 trials to get the average parameters
         for trial in range(trials): 
             
             ###############################################################################
             #Initialize Variables
             ###############################################################################                   
+            # Initialize the network
+            network = random_graph(num_nodes, nodes_conn)   # call network function
             neighbor_list=network[1]                        # create list of each node's neighbors                 
             
             # Create empty matrix of nodes and information
